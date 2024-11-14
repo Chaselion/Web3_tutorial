@@ -22,7 +22,7 @@ contract FundMe {
     bool public getFundSuccess = false;
 
     //如果使用USD,需要使用预言机chainlink
-    AggregatorV3Interface internal dataFeed;
+    AggregatorV3Interface public dataFeed;
     address public owner;
 
     //构造函数
