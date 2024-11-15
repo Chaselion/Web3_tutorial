@@ -26,9 +26,9 @@ contract FundMe {
     address public owner;
 
     //构造函数
-    constructor(uint _lockTime){
+    constructor(uint _lockTime, address dataFeedAddr){
         //sepolia 测试网
-        dataFeed = AggregatorV3Interface(0x694AA1769357215DE4FAC081bf1f309aDC325306);
+        dataFeed = AggregatorV3Interface(dataFeedAddr);
         owner = msg.sender;
         depolymentTimestamp = block.timestamp;
         lockTime = _lockTime;
