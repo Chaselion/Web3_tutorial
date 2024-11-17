@@ -21,11 +21,15 @@ module.exports= async({getNamedAccounts, deployments})=>{
 
     
     let dataFeedAddr
+    let confirmations
+  
     if(devlopmentChains.includes(network.name)){
         const mockV3Aggregator = await deployments.get("MockV3Aggregator")
         dataFeedAddr = mockV3Aggregator.address
+        confirmations = 0
     }else{
         dataFeedAddr = networkConfig[network.config.chainId].ethUsdDataFeed
+        confirmations = CONFIRMATIONS
     }
 
     // const mockDataFeed = await deployments.get("MockV3Aggregator")
@@ -34,7 +38,7 @@ module.exports= async({getNamedAccounts, deployments})=>{
         // args: [180, mockDataFeed.address],
         args: [LOCK_TIME, dataFeedAddr],
         log: true,
-        waitConfirmations: CONFIRMATIONS
+        waitConfirmations: confirmations
     })
     //remove deployments directory or add "--reset" flag if you redeploy contract
 

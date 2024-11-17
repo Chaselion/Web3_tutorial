@@ -21,6 +21,9 @@ contract FundMe {
 
     bool public getFundSuccess = false;
 
+    event FundWithdrawByOwner(uint256);
+    event RefundByFunder(address, uint256);
+
     //如果使用USD,需要使用预言机chainlink
     AggregatorV3Interface public dataFeed;
     address public owner;
@@ -76,10 +79,13 @@ contract FundMe {
 
         // 3、call: transfer ETH with data return value of function and bool
         bool success;
-        (success , ) = payable(msg.sender).call{value: address(this).balance}("");
+        uint256 balance = address(this).balance;
+        (success , ) = payable(msg.sender).call{value: balance}("");
         require(success,"transfer tx failed");
         fundersToAmount[msg.sender] = 0;
         getFundSuccess = true;//flag
+        //emit event
+        emit FundWithdrawByOwner(balance);
     }
 
     function refund() external windosClose {
@@ -87,9 +93,11 @@ contract FundMe {
         require(fundersToAmount[msg.sender] != 0 ,"there is no fund for you");
         //require(block.timestamp >= depolymentTimestamp + lockTime, "window is not colsed");
         bool success;
-        (success , ) = payable(msg.sender).call{value: fundersToAmount[msg.sender]}("");
+        uint256 balance = fundersToAmount[msg.sender];
+        (success , ) = payable(msg.sender).call{value: balance}("");
         require(success,"transfer tx failed");
         fundersToAmount[msg.sender] = 0;
+        emit RefundByFunder(msg.sender, balance);
     }
 
     function setFunderToAmount(address funder, uint256 amountToUpdate) external {
